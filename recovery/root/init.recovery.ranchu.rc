@@ -1,0 +1,47 @@
+# init.recovery.goldfish.rc
+# Recovery-stage init script for Google AVD x86_64 (goldfish/ranchu virtual hardware)
+#
+
+on early-init
+    # Load the virtio display/input/network stack for QEMU.
+    # Order matters: dependencies first.
+    insmod /lib/modules/virtio_dma_buf.ko
+    insmod /lib/modules/virtio_pci_modern_dev.ko
+    insmod /lib/modules/virtio_pci.ko
+    insmod /lib/modules/failover.ko
+    insmod /lib/modules/net_failover.ko
+    insmod /lib/modules/virtio_net.ko
+    insmod /lib/modules/virtio-gpu.ko
+    insmod /lib/modules/vkms.ko
+    insmod /lib/modules/virtio_input.ko
+    insmod /lib/modules/virtio_blk.ko
+    insmod /lib/modules/virtio_console.ko
+    insmod /lib/modules/virtio-rng.ko
+    insmod /lib/modules/goldfish_pipe.ko
+    insmod /lib/modules/goldfish_battery.ko
+    insmod /lib/modules/goldfish_address_space.ko
+    insmod /lib/modules/goldfish_sync.ko
+
+on init
+    setprop ro.adb.secure 0
+    setprop service.adb.tcp.port 5555
+    setprop sys.usb.configfs 0
+    setprop ro.hardware goldfish
+
+on fs
+    wait /dev/block/sda 10
+    exec u:r:su:s0 root root -- /system/bin/sh -c "tune2fs -l /dev/block/sda >/dev/null 2>&1 || mke2fs -t ext4 -F /dev/block/sda"
+    mount ext4 /dev/block/sda /data noatime nosuid nodev
+    setprop sys.usb.config adb
+
+on property:sys.usb.config=mtp,adb
+    setprop sys.usb.config adb
+
+on property:sys.usb.config=adb
+    exec u:r:su:s0 root root -- /system/bin/sh -c "ifconfig lo 127.0.0.1 up 2>/dev/null || true; ifconfig eth0 10.0.2.15 netmask 255.255.255.0 up 2>/dev/null || true"
+
+on property:init.svc.recovery=stopped
+    exec /system/bin/sh -c "echo '=== TWRP LOG ===' > /dev/kmsg; cat /tmp/recovery.log > /dev/kmsg"
+
+on property:ro.boot.usbcontroller=*
+    setprop sys.usb.controller ${ro.boot.usbcontroller}

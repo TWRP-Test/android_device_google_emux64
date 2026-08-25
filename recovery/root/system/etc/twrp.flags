@@ -1,0 +1,4 @@
+# TWRP partition flags — QEMU USB storage, no dynamic partitions
+#
+# <mnt_point>  <fstype>  <block_device>  <flags>
+/data          ext4      /dev/block/sda  flags=backup=1
