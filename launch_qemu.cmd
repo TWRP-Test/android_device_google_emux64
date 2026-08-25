@@ -65,11 +65,11 @@ if exist "%~dp0fit_qemu_window.ps1" (
     -device virtio-serial-pci,ioeventfd=off ^
     -device usb-ehci ^
     -device usb-storage,drive=userdata ^
-    -device usb-mouse ^
+    -device usb-tablet ^
     -device virtio-net-pci,netdev=net0 ^
     -netdev user,id=net0,hostfwd=tcp::5557-:5555 ^
     -vga none ^
-    -display gtk,full-screen=off,show-menubar=off,show-cursor=off,zoom-to-fit=on ^
+    -display gtk,full-screen=off,show-menubar=off,show-cursor=on,zoom-to-fit=on ^
     -serial file:"%LOG%" ^
     -monitor tcp:127.0.0.1:5558,server,nowait ^
     -no-reboot
