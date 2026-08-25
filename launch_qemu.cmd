@@ -17,7 +17,7 @@ set "DATA_IMG=%ARTIFACTS%\qemu_userdata.img"
 set "ADB=D:\YuKongA\AndroidSDK\platform-tools\adb.exe"
 set "WIDTH=1080"
 set "HEIGHT=1920"
-set "REFRESH=120"
+set "REFRESH=60"
 
 rem WHPX is the fast path on Windows. Use a conservative CPU model because
 rem QEMU 11 can crash when WHPX is combined with -cpu max. Pass "tcg" to
@@ -59,7 +59,7 @@ if exist "%~dp0fit_qemu_window.ps1" (
     -initrd "%RAMDISK%" ^
     -drive file="%DATA_IMG%",if=none,format=raw,id=userdata ^
     -nodefaults ^
-    -append "8250.nr_uarts=1 clocksource=pit no_timer_check console=0 androidboot.hardware=ranchu androidboot.selinux=permissive androidboot.serialno=QEMU0001 qemu=1 skip_initramfs video=Virtual-1:%WIDTH%x%HEIGHT%@%%" ^
+    -append "8250.nr_uarts=1 clocksource=pit no_timer_check console=0 androidboot.hardware=ranchu androidboot.selinux=permissive androidboot.serialno=QEMU0001 qemu=1 skip_initramfs video=Virtual-1:%WIDTH%x%HEIGHT%@%REFRESH%" ^
     -device virtio-gpu-pci,edid=on,xres=%WIDTH%,yres=%HEIGHT% ^
     -device virtio-rng-pci ^
     -device virtio-serial-pci,ioeventfd=off ^
