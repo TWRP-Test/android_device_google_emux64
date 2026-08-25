@@ -1,0 +1,4 @@
+# Android fstab — Google AVD x86_64 (QEMU, no dynamic partitions)
+#
+# <src>          <mnt_point>  <type>  <mnt_flags>             <fs_mgr_flags>
+/dev/block/sda   /data        ext4    noatime,nosuid,nodev    wait,check

@@ -1,0 +1,3 @@
+*.ko binary
+*.cpio binary
+*.img binary
