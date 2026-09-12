@@ -74,6 +74,72 @@ launch_qemu.cmd tcg
 adb connect 127.0.0.1:5557
 ```
 
+## Linux 安装与一键启动
+
+以 Debian/Ubuntu 为例，安装 QEMU、GTK 图形界面和 ADB：
+
+```bash
+sudo apt update
+sudo apt install qemu-system-x86 qemu-utils qemu-system-gui android-tools-adb xdotool
+```
+
+如果希望使用 KVM 加速，把当前用户加入 `kvm` 组后重新登录：
+
+```bash
+sudo usermod -aG kvm "$USER"
+```
+
+确保编译得到的 `ramdisk-recovery.cpio` 位于 `artifacts/` 下，然后执行：
+
+```bash
+chmod +x launch_qemu.sh
+./launch_qemu.sh
+```
+
+脚本默认检测 `/dev/kvm`，可用时使用 KVM；没有 KVM 时自动回退到 TCG。
+Linux 下默认在启动阶段将 QEMU 窗口按屏幕可用区域缩放；尺寸稳定后可自由移动窗口。
+没有 X11/`xdotool` 时自动使用全屏显示。
+Wayland 下会通过 XWayland 运行 QEMU GTK，以便调整窗口大小。
+也可以手动指定：
+
+```bash
+./launch_qemu.sh kvm
+./launch_qemu.sh tcg
+
+# 可选：强制窗口模式或全屏模式
+WINDOW_MODE=window ./launch_qemu.sh
+WINDOW_MODE=fullscreen ./launch_qemu.sh
+```
+
+启动后连接 ADB：
+
+```bash
+adb connect 127.0.0.1:5557
+```
+
+启动日志写入 `artifacts/qemu_boot.log`，userdata 镜像会在首次启动时自动创建。
+
+更新编译产物
+
+可以使用脚本将最新编译得到的 ramdisk 自动复制到启动目录：
+
+```bash
+chmod +x update_ramdisk.sh
+./update_ramdisk.sh
+```
+
+脚本默认读取：
+
+```text
+/home/yukonga/Documents/twrp-16.0/out/target/product/emux64/ramdisk-recovery.cpio
+```
+
+也可以传入其他构建输出路径：
+
+```bash
+./update_ramdisk.sh /path/to/ramdisk-recovery.cpio
+```
+
 ## 前提
 
 1. Windows + `qemu-system-x86_64`（默认 `D:\YuKongA\qemu\qemu-w64`）
