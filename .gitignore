@@ -1,1 +1,3 @@
-artifacts/
+artifacts/ramdisk-recovery.cpio
+artifacts/qemu_boot.log
+artifacts/qemu_userdata.img

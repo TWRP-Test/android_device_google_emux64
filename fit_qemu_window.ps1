@@ -41,6 +41,7 @@ public static class QemuWindowNative {
 $swpNoZOrder = 0x0004
 $swpNoActivate = 0x0010
 $deadline = [DateTime]::UtcNow.AddSeconds(45)
+$stableCount = 0
 
 while ([DateTime]::UtcNow -lt $deadline) {
     $qemuProcess = Get-Process -Name qemu-system-x86_64 -ErrorAction SilentlyContinue |
@@ -83,14 +84,22 @@ while ([DateTime]::UtcNow -lt $deadline) {
     $targetLeft = $screen.WorkingArea.Left + [int][Math]::Floor(($screen.WorkingArea.Width - $targetOuterWidth) / 2)
     $targetTop = $screen.WorkingArea.Top + [int][Math]::Floor(($screen.WorkingArea.Height - $targetOuterHeight) / 2)
 
-    [QemuWindowNative]::SetWindowPos(
-        $qemuProcess.MainWindowHandle,
-        [IntPtr]::Zero,
-        $targetLeft,
-        $targetTop,
-        $targetOuterWidth,
-        $targetOuterHeight,
-        $swpNoZOrder -bor $swpNoActivate) | Out-Null
+    if ($outerWidth -eq $targetOuterWidth -and $outerHeight -eq $targetOuterHeight) {
+        $stableCount++
+        if ($stableCount -ge 6) {
+            break
+        }
+    } else {
+        $stableCount = 0
+        [QemuWindowNative]::SetWindowPos(
+            $qemuProcess.MainWindowHandle,
+            [IntPtr]::Zero,
+            $targetLeft,
+            $targetTop,
+            $targetOuterWidth,
+            $targetOuterHeight,
+            $swpNoZOrder -bor $swpNoActivate) | Out-Null
+    }
 
     Start-Sleep -Milliseconds 500
 }
