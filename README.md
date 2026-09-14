@@ -117,7 +117,9 @@ WINDOW_MODE=fullscreen ./launch_qemu.sh
 adb connect 127.0.0.1:5557
 ```
 
-启动日志写入 `artifacts/qemu_boot.log`，userdata 镜像会在首次启动时自动创建。
+启动日志写入 `artifacts/qemu_boot.log`，userdata 和 persist 镜像会在首次启动时自动创建。
+两块镜像分别挂载为 `/data` 和 `/persist`；其中 `/persist` 会 bind 到
+`/mnt/vendor/persist`，TWRP 配置仍保存为 `/mnt/vendor/persist/TWRP/.twrp_settings`。
 
 更新编译产物
 
@@ -161,5 +163,5 @@ recovery/root/init.recovery.ranchu.rc
 recovery/root/lib/modules/*.ko
 recovery/root/system/etc/task_profiles.json
 recovery/root/system/etc/twrp.flags
-artifacts/            (ramdisk-recovery.cpio, qemu_userdata.img, qemu_boot.log)
+artifacts/            (ramdisk-recovery.cpio, qemu_userdata.img, qemu_persist.img, qemu_boot.log)
 ```

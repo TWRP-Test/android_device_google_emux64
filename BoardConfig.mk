@@ -61,6 +61,8 @@ BOARD_RAMDISK_USE_LZ4       := true
 
 # Partitions
 BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED  := true
+# Keep the persist mount point in the recovery ramdisk.
+BOARD_ROOT_EXTRA_FOLDERS                := persist
 # Recovery partition size: 64 MiB (typical for goldfish)
 BOARD_RECOVERYIMAGE_PARTITION_SIZE      := 0x4000000
 

@@ -10,6 +10,7 @@ QEMU_IMG="${QEMU_IMG:-qemu-img}"
 RAMDISK="${RAMDISK:-${ARTIFACTS}/ramdisk-recovery.cpio}"
 KERNEL="${KERNEL:-${ARTIFACTS}/kernel-ranchu}"
 DATA_IMG="${DATA_IMG:-${ARTIFACTS}/qemu_userdata.img}"
+PERSIST_IMG="${PERSIST_IMG:-${ARTIFACTS}/qemu_persist.img}"
 LOG="${LOG:-${ARTIFACTS}/qemu_boot.log}"
 
 WIDTH="${WIDTH:-1080}"
@@ -141,6 +142,11 @@ if [[ ! -f "${DATA_IMG}" ]]; then
     "${QEMU_IMG}" create -f raw "${DATA_IMG}" 512M
 fi
 
+if [[ ! -f "${PERSIST_IMG}" ]]; then
+    echo "Creating 32M persist image..."
+    "${QEMU_IMG}" create -f raw "${PERSIST_IMG}" 32M
+fi
+
 case "${WINDOW_MODE}" in
     auto)
         if [[ -n "${DISPLAY:-}" ]] && command -v xdotool >/dev/null 2>&1; then
@@ -184,6 +190,7 @@ echo "ADB command after boot: adb connect 127.0.0.1:5557"
     -kernel "${KERNEL}" \
     -initrd "${RAMDISK}" \
     -drive "file=${DATA_IMG},if=none,format=raw,id=userdata" \
+    -drive "file=${PERSIST_IMG},if=none,format=raw,id=persist" \
     -nodefaults \
     -append "8250.nr_uarts=1 clocksource=pit no_timer_check console=0 androidboot.hardware=ranchu androidboot.selinux=permissive androidboot.serialno=QEMU0001 qemu=1 skip_initramfs video=Virtual-1:${WIDTH}x${HEIGHT}@${REFRESH}" \
     -device "virtio-gpu-pci,edid=on,xres=${WIDTH},yres=${HEIGHT}" \
@@ -191,6 +198,7 @@ echo "ADB command after boot: adb connect 127.0.0.1:5557"
     -device virtio-serial-pci,ioeventfd=off \
     -device usb-ehci \
     -device usb-storage,drive=userdata \
+    -device usb-storage,drive=persist \
     -device usb-tablet \
     -device virtio-net-pci,netdev=net0 \
     -netdev user,id=net0,hostfwd=tcp::5557-:5555 \
