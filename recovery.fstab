@@ -2,3 +2,4 @@
 #
 # <src>          <mnt_point>  <type>  <mnt_flags>             <fs_mgr_flags>
 /dev/block/sda   /data        ext4    noatime,nosuid,nodev    wait,check
+/dev/block/sdb   /persist     ext4    noatime,nosuid,nodev    wait

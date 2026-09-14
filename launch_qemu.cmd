@@ -14,6 +14,7 @@ if not exist "%RAMDISK%" set "RAMDISK=D:\GitHub\android_device_google_emux64\art
 set "ARTIFACTS=%SCRIPT_DIR%artifacts"
 set "LOG=%ARTIFACTS%\qemu_boot.log"
 set "DATA_IMG=%ARTIFACTS%\qemu_userdata.img"
+set "PERSIST_IMG=%ARTIFACTS%\qemu_persist.img"
 set "ADB=D:\YuKongA\AndroidSDK\platform-tools\adb.exe"
 set "WIDTH=1080"
 set "HEIGHT=1920"
@@ -39,6 +40,11 @@ if not exist "%DATA_IMG%" (
     "%QEMU_IMG%" create -f raw "%DATA_IMG%" 512M
     if errorlevel 1 exit /b 1
 )
+if not exist "%PERSIST_IMG%" (
+    echo Creating 32M persist image...
+    "%QEMU_IMG%" create -f raw "%PERSIST_IMG%" 32M
+    if errorlevel 1 exit /b 1
+)
 
 echo Starting TWRP emux64...
 echo Accel: %ACCEL%
@@ -58,6 +64,7 @@ if exist "%~dp0fit_qemu_window.ps1" (
     -kernel "%KERNEL%" ^
     -initrd "%RAMDISK%" ^
     -drive file="%DATA_IMG%",if=none,format=raw,id=userdata ^
+    -drive file="%PERSIST_IMG%",if=none,format=raw,id=persist ^
     -nodefaults ^
     -append "8250.nr_uarts=1 clocksource=pit no_timer_check console=0 androidboot.hardware=ranchu androidboot.selinux=permissive androidboot.serialno=QEMU0001 qemu=1 skip_initramfs video=Virtual-1:%WIDTH%x%HEIGHT%@%REFRESH%" ^
     -device virtio-gpu-pci,edid=on,xres=%WIDTH%,yres=%HEIGHT% ^
@@ -65,6 +72,7 @@ if exist "%~dp0fit_qemu_window.ps1" (
     -device virtio-serial-pci,ioeventfd=off ^
     -device usb-ehci ^
     -device usb-storage,drive=userdata ^
+    -device usb-storage,drive=persist ^
     -device usb-tablet ^
     -device virtio-net-pci,netdev=net0 ^
     -netdev user,id=net0,hostfwd=tcp::5557-:5555 ^
