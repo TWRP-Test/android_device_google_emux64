@@ -17,7 +17,7 @@ set "DATA_IMG=%ARTIFACTS%\qemu_userdata.img"
 set "PERSIST_IMG=%ARTIFACTS%\qemu_persist.img"
 set "ADB=D:\YuKongA\AndroidSDK\platform-tools\adb.exe"
 set "WIDTH=1080"
-set "HEIGHT=1920"
+set "HEIGHT=2400"
 set "REFRESH=60"
 
 rem WHPX is the fast path on Windows. Use a conservative CPU model because
